@@ -35,11 +35,14 @@
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://techanjs.org/techan.min.js"></script>
+<script src="labella.min.js"></script>
 <script>
 
     var margin = {top: 20, right: 20, bottom: 30, left: 50},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
+
+	var paddingBottom = 200;
 
     var parseDate = d3.time.format("%d-%b-%y").parse;
 
@@ -63,7 +66,7 @@
 
     var svg = d3.select("body").append("svg")
             .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
+            .attr("height", height + margin.top + margin.bottom + paddingBottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -91,46 +94,71 @@
                 .attr("class", "candlestick")
                 .call(candlestick);
 
+		//figure out which data points have labels to be added
+		var data_with_labels = data.filter(function(d){
+			if (d.message){	return true;}
+			else { return false;}
+			});
+
+		//pick a color for the lines and dots
+		var label_colors = "#777";
+
+		//draw lines to axis
+		svg.append("g")
+				.selectAll("line")
+				.data(data_with_labels)
+				.enter()
+				.append("line")
+				.attr("x1", function(d){return x(d.date);})
+				.attr("y1", function(d){return y(d.close);})
+				.attr("x2", function(d){return x(d.date);})
+				.attr("y2", function(d){return height;})
+				.attr("stroke-width", 1)
+				.attr("stroke", label_colors)
+
+		//draw dots
 		svg.append("g")
 				.selectAll("circle")
-				.data(data)
+				.data(data_with_labels)
 				.enter()
 				.append("circle")
+				.style("fill", label_colors)
 				.attr("cx", function(d){return x(d.date);})
-				.attr("cy", function(d){return y(d.close);})
-				.attr("r",5);
+				.attr("cy", function(d){return height;})
+				.attr("r",3);
 
-		//filter out data to just that with messages
-		svg.append("g")
-				.selectAll("text")
-				.data(data.filter(function(d){
-						if (d.message){
-							return true;
-						}
-						else { return false; }
-					}))
-				.enter()
-				.append("text")
-				.text(function(d){
-					return d.message;
-					})
-				.attr("x", function(d){return x(d.date);})
-				.attr("y", function(d){return y(d.close)+20;});
+
+		// Adds text at message
+		//svg.append("g")
+		//		.selectAll("text")
+		//		.data(data.filter(function(d){
+		//				if (d.message){
+		//					return true;
+		//				}
+		//				else { return false; }
+		//			}))
+		//		.enter()
+		//		.append("text")
+		//		.text(function(d){
+		//			return d.message;
+		//			})
+		//		.attr("x", function(d){return x(d.date);})
+		//		.attr("y", function(d){return y(d.close)+20;});
 
         svg.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + height + ")")
                 .call(xAxis);
 
-        //svg.append("g")
-        //        .attr("class", "y axis")
-        //        .call(yAxis)
-        //        .append("text")
-        //        .attr("transform", "rotate(-90)")
-        //        .attr("y", 6)
-        //        .attr("dy", ".71em")
-        //        .style("text-anchor", "end")
-        //        .text("Price ($)");
+        svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text("Price ($)");
 
         console.log("Render time: " + (Date.now()-timestart));
     });
