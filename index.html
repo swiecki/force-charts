@@ -31,6 +31,12 @@
         stroke: #FF0000;
     }
 
+	path.link {
+		fill: none;
+		stroke: black;
+		stroke-width:1px;
+	}
+
 </style>
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -101,6 +107,7 @@
 			});
 
 		//pick a color for the lines and dots
+		//TODO: do this via CSS
 		var label_colors = "#777";
 
 		//draw lines to axis
@@ -127,24 +134,47 @@
 				.attr("cy", function(d){return height;})
 				.attr("r",3);
 
+		//get labella going
+		var force = new labella.Force({minPos:0,maxPos:900, algorithm: 'simple'});
 
-		// Adds text at message
-		//svg.append("g")
-		//		.selectAll("text")
-		//		.data(data.filter(function(d){
-		//				if (d.message){
-		//					return true;
-		//				}
-		//				else { return false; }
-		//			}))
-		//		.enter()
-		//		.append("text")
-		//		.text(function(d){
-		//			return d.message;
-		//			})
-		//		.attr("x", function(d){return x(d.date);})
-		//		.attr("y", function(d){return y(d.close)+20;});
+		var nodes = data_with_labels.map(function(d){
+			var node = new labella.Node(x(d.date),50);
+			return node;
+		});
 
+		var renderer = new labella.Renderer({layerGap:60,nodeHeight:12});
+
+		function draw(nodes){
+			renderer.layout(nodes);
+			
+			linkLayer = svg.append("g")
+				.attr('transform', 'translate('+ 0 +','+ height +')');
+			linkLayer
+					.selectAll("rect.flag")
+					.data(nodes)
+					.enter()
+					.append("rect")
+					.classed("flag", true)
+					.attr('x', function(d){ return d.x - d.dx/2; })
+				    .attr('y', function(d){ return d.y; })
+				    .attr('width', function(d){ return d.dx; })
+    				.attr('height', function(d){ return d.dy; })
+					.style("fill", "grey");
+
+  // Draw path from point on the timeline to the label rectangle
+			linkLayer.selectAll('path.link')
+			.data(nodes)
+			.enter().append('path')
+			.classed('link', true)
+			.attr('d', function(d){return renderer.generatePath(d);})
+			.style('stroke',"#777")
+			.style('stroke-width',1)
+			.style('fill', 'none');
+		}
+
+		force.nodes(nodes).on("end", function(){draw(force.nodes())}).start(100);
+
+		// and finally, add the axes
         svg.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + height + ")")
