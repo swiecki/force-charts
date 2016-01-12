@@ -103,25 +103,24 @@
 		//filter out data to just that with messages
 		svg.append("g")
 				.selectAll("text")
-				.data(data)
+				.data(data.filter(function(d){
+						if (d.message){
+							return true;
+						}
+						else { return false; }
+					}))
 				.enter()
 				.append("text")
-				.filter(function(d){
-					if ('message' in d){
-						return true;
-					}
-					else { return true; }
-				})
 				.text(function(d){
 					return d.message;
 					})
 				.attr("x", function(d){return x(d.date);})
 				.attr("y", function(d){return y(d.close)+20;});
 
-        //svg.append("g")
-        //        .attr("class", "x axis")
-        //        .attr("transform", "translate(0," + height + ")")
-        //        .call(xAxis);
+        svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
 
         //svg.append("g")
         //        .attr("class", "y axis")
