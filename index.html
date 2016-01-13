@@ -49,6 +49,8 @@
             height = 500 - margin.top - margin.bottom;
 
 	var paddingBottom = 200;
+	
+	var colorScale = d3.scale.category10();
 
     var parseDate = d3.time.format("%d-%b-%y").parse;
 
@@ -142,6 +144,10 @@
 			return node;
 		});
 
+		function color(d,i){
+			return colorScale(i);
+		}
+
 		var renderer = new labella.Renderer({layerGap:60,nodeHeight:12});
 
 		function draw(nodes){
@@ -159,7 +165,7 @@
 				    .attr('y', function(d){ return d.y; })
 				    .attr('width', function(d){ return d.dx; })
     				.attr('height', function(d){ return d.dy; })
-					.style("fill", "grey");
+					.style("fill", color);
 
   // Draw path from point on the timeline to the label rectangle
 			linkLayer.selectAll('path.link')
@@ -167,7 +173,7 @@
 			.enter().append('path')
 			.classed('link', true)
 			.attr('d', function(d){return renderer.generatePath(d);})
-			.style('stroke',"#777")
+			.style('stroke', color)
 			.style('stroke-width',1)
 			.style('fill', 'none');
 		}
