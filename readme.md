@@ -6,8 +6,5 @@ This is an integration of two javascript libraries, [TechanJS](https://github.co
 ![example.png](https://raw.githubusercontent.com/swiecki/force-charts/master/example.png "Screenshot")
 
 #####Todo
-* place label text on node
 * wrap text to fit node
-* change node size to fit text
 * separate out javascript library from rest of html
-* Screenshot
