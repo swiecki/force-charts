@@ -37,12 +37,27 @@
 		stroke-width:1px;
 	}
 
+	text.title {
+		font-size: 25px;
+		font-family: Segoe UI;
+		font-weight:400;
+	}
+
+	text.subtitle {
+		font-size: 15px;
+		font-family: Segoe UI;
+		font-weight:200;
+	}
+
 </style>
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://techanjs.org/techan.min.js"></script>
 <script src="labella.min.js"></script>
 <script>
+	//some config
+	var title_text = "TSLA";
+	var subtitle_text = "Tesla Motors";
 
     var margin = {top: 20, right: 20, bottom: 30, left: 50},
             width = 960 - margin.left - margin.right,
@@ -82,7 +97,8 @@
         var accessor = candlestick.accessor(),
             timestart = Date.now();
 
-        data = data.slice(0, 200).map(function(d) {
+		//can optionally slice off to limit data
+        data = data.slice(0,-1).map(function(d) {
             return {
                 date: parseDate(d.Date),
                 open: +d.Open,
@@ -160,7 +176,7 @@
 			return colorScale(i);
 		}
 
-		var renderer = new labella.Renderer({layerGap:60,nodeHeight:12});
+		var renderer = new labella.Renderer({layerGap:30,nodeHeight:12});
 
 		function draw(nodes){
 			renderer.layout(nodes);
@@ -223,6 +239,24 @@
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
                 .text("Price ($)");
+		
+		//and finally render a title
+		svg.append("g")
+				.append("text")
+				.attr("class", "title")
+				.attr("x", width/2)
+				.attr("y", ".2em")
+				.attr("text-anchor", "middle")
+				.text(title_text);
+
+		//render a subtitle
+		svg.append("g")
+				.append("text")
+				.attr("class", "subtitle")
+				.attr("x", width/2)
+				.attr("y", "1.5em")
+				.attr("text-anchor", "middle")
+				.text(subtitle_text);
 
         console.log("Render time: " + (Date.now()-timestart));
     });
