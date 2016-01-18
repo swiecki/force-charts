@@ -58,30 +58,30 @@
 	//some config
 	var title_text = "TSLA";
 	var subtitle_text = "Tesla Motors";
-
-    var margin = {top: 20, right: 20, bottom: 30, left: 50},
-            width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
-
+	
+	var margin = {top: 20, right: 20, bottom: 30, left: 50},
+		width = 960 - margin.left - margin.right,
+		height = 500 - margin.top - margin.bottom;
+	
 	var paddingBottom = 200;
 	
 	var colorScale = d3.scale.category10();
+	
+	var parseDate = d3.time.format("%d-%b-%y").parse;
+	
+	var x = techan.scale.financetime()
+			.range([0, width]);
+	
+	var y = d3.scale.linear()
+			.range([height, 0]);
 
-    var parseDate = d3.time.format("%d-%b-%y").parse;
+	var candlestick = techan.plot.candlestick()
+			.xScale(x)
+			.yScale(y);
 
-    var x = techan.scale.financetime()
-            .range([0, width]);
-
-    var y = d3.scale.linear()
-            .range([height, 0]);
-
-    var candlestick = techan.plot.candlestick()
-            .xScale(x)
-            .yScale(y);
-
-    var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
+	var xAxis = d3.svg.axis()
+			.scale(x)
+			.orient("bottom");
 
     var yAxis = d3.svg.axis()
             .scale(y)
@@ -94,8 +94,8 @@
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     d3.csv("data.csv", function(error, data) {
-        var accessor = candlestick.accessor(),
-            timestart = Date.now();
+		var accessor = candlestick.accessor(),
+			timestart = Date.now();
 
 		//can optionally slice off to limit data
         data = data.slice(0,-1).map(function(d) {
