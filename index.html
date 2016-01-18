@@ -139,10 +139,18 @@
 		//get labella going
 		var force = new labella.Force({minPos:0,maxPos:900, algorithm: 'simple'});
 
+		//use fake labels to get the dimensions
+		var dummyText = svg.append("g").append('text');
+
 		var nodes = data_with_labels.map(function(d){
-			var node = new labella.Node(x(d.date),50);
+			var bbox = dummyText.text(d.message)[0][0].getBBox();
+			d.h = bbox.height;
+			d.w = bbox.width;
+			var node = new labella.Node(x(d.date),d.w + 9,d);
 			return node;
 		});
+
+		dummyText.remove();
 
 		function color(d,i){
 			return colorScale(i);
@@ -154,11 +162,14 @@
 			renderer.layout(nodes);
 			
 			linkLayer = svg.append("g")
-				.attr('transform', 'translate('+ 0 +','+ height +')');
-			linkLayer
+					.attr('transform', 'translate('+ 0 +','+ height +')');
+			
+			flags = linkLayer
 					.selectAll("rect.flag")
 					.data(nodes)
 					.enter()
+					.append('g')
+			flags
 					.append("rect")
 					.classed("flag", true)
 					.attr('x', function(d){ return d.x - d.dx/2; })
@@ -167,15 +178,22 @@
     				.attr('height', function(d){ return d.dy; })
 					.style("fill", color);
 
-  // Draw path from point on the timeline to the label rectangle
+			// Draw path from point on the timeline to the label rectangle
 			linkLayer.selectAll('path.link')
-			.data(nodes)
-			.enter().append('path')
-			.classed('link', true)
-			.attr('d', function(d){return renderer.generatePath(d);})
-			.style('stroke', "#777")
-			.style('stroke-width',1)
-			.style('fill', 'none');
+					.data(nodes)
+					.enter().append('path')
+					.classed('link', true)
+					.attr('d', function(d){return renderer.generatePath(d);})
+					.style('stroke', "#777")
+					.style('stroke-width',1)
+					.style('fill', 'none');
+
+			flags.append('text')
+					.attr('x', function(d){ return d.x - d.dx/2 + 1; })
+				    .attr('y', function(d){ return d.y+9; })
+					.style('fill', '#000')
+					.text(function(d){return d.data.message;});
+
 		}
 
 		force.nodes(nodes).on("end", function(){draw(force.nodes())}).start(100);
