@@ -2,34 +2,34 @@
 <meta charset="utf-8">
 <style>
 
-    body {
-        font: 10px sans-serif;
-    }
+	body {
+		font: 10px sans-serif;
+	}
 
-    .axis path,
-    .axis line {
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
-    }
+	.axis path,
+	.axis line {
+		fill: none;
+		stroke: #000;
+		shape-rendering: crispEdges;
+	}
 
-    path.candle {
-        stroke: #000000;
-    }
+	path.candle {
+		stroke: #000000;
+	}
 
-    path.candle.body {
-        stroke-width: 0;
-    }
+	path.candle.body {
+		stroke-width: 0;
+	}
 
-    path.candle.up {
-        fill: #00AA00;
-        stroke: #00AA00;
-    }
+	path.candle.up {
+		fill: #00AA00;
+		stroke: #00AA00;
+	}
 
-    path.candle.down {
-        fill: #FF0000;
-        stroke: #FF0000;
-    }
+	path.candle.down {
+		fill: #FF0000;
+		stroke: #FF0000;
+	}
 
 	path.link {
 		fill: none;
@@ -83,40 +83,40 @@
 			.scale(x)
 			.orient("bottom");
 
-    var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left");
+	var yAxis = d3.svg.axis()
+			.scale(y)
+			.orient("left");
 
-    var svg = d3.select("body").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom + paddingBottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	var svg = d3.select("body").append("svg")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom + paddingBottom)
+			.append("g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    d3.csv("data.csv", function(error, data) {
+	d3.csv("data.csv", function(error, data) {
 		var accessor = candlestick.accessor(),
 			timestart = Date.now();
 
 		//can optionally slice off to limit data
-        data = data.slice(0,-1).map(function(d) {
-            return {
-                date: parseDate(d.Date),
-                open: +d.Open,
-                high: +d.High,
-                low: +d.Low,
-                close: +d.Close,
-                volume: +d.Volume,
+		data = data.slice(0,-1).map(function(d) {
+			return {
+				date: parseDate(d.Date),
+				open: +d.Open,
+				high: +d.High,
+				low: +d.Low,
+				close: +d.Close,
+				volume: +d.Volume,
 				message: d.Message
-            };
-        }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
+			};
+		}).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
 
-        x.domain(data.map(accessor.d));
-        y.domain(techan.scale.plot.ohlc(data, accessor).domain());
+		x.domain(data.map(accessor.d));
+		y.domain(techan.scale.plot.ohlc(data, accessor).domain());
 
-        svg.append("g")
-                .datum(data)
-                .attr("class", "candlestick")
-                .call(candlestick);
+		svg.append("g")
+				.datum(data)
+				.attr("class", "candlestick")
+				.call(candlestick);
 
 		//figure out which data points have labels to be added
 		var data_with_labels = data.filter(function(d){
@@ -197,8 +197,8 @@
 			flags
 					.append("rect")
 					.classed("flag", true)
-				    .attr('width', function(d){ return d.data.w + 9; })
-    				.attr('height', function(d){ return d.data.h + 4; })
+					.attr('width', function(d){ return d.data.w + 9; })
+					.attr('height', function(d){ return d.data.h + 4; })
 					.attr('rx',2)
 					.attr('ry',2)
 					.style("fill", color);
@@ -225,20 +225,20 @@
 		force.nodes(nodes).on("end", function(){draw(force.nodes())}).start(100);
 
 		// and finally, add the axes
-        svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis);
+		svg.append("g")
+				.attr("class", "x axis")
+				.attr("transform", "translate(0," + height + ")")
+				.call(xAxis);
 
-        svg.append("g")
-                .attr("class", "y axis")
-                .call(yAxis)
-                .append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .style("text-anchor", "end")
-                .text("Price ($)");
+		svg.append("g")
+				.attr("class", "y axis")
+				.call(yAxis)
+				.append("text")
+				.attr("transform", "rotate(-90)")
+				.attr("y", 6)
+				.attr("dy", ".71em")
+				.style("text-anchor", "end")
+				.text("Price ($)");
 		
 		//and finally render a title
 		svg.append("g")
@@ -258,7 +258,7 @@
 				.attr("text-anchor", "middle")
 				.text(subtitle_text);
 
-        console.log("Render time: " + (Date.now()-timestart));
-    });
+		console.log("Render time: " + (Date.now()-timestart));
+	});
 
 </script>
